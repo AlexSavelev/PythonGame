@@ -25,7 +25,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__(groups.player_group, groups.all_sprites)
         self.image = load_texture('mario.png')
         self.rect = self.image.get_rect().move(
-            TILE_WIDTH * pos_x + 15, TILE_HEIGHT * pos_y + 5)
+            TILE_WIDTH * pos_x + 5, TILE_HEIGHT * pos_y - 5)
 
     def update(self, *args):
         self.rect.x += TILE_WIDTH * args[0]

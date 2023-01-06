@@ -112,27 +112,31 @@ class Main:
     def run(self):
         self.start_screen()
 
+        background = pygame.transform.scale(load_texture('S_BG3.png'), SIZE)
         self.make_level(load_map('mapT.csv'))
 
-        player = Player(self.groups, 5, 50)
+        player = Player(self.groups, 10, 50)
         camera = Camera()
 
         running = True
         while running:
-            self.screen.fill('white')
+            self.screen.fill('#FFFFFF')
+            self.screen.blit(background, (0, 0))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_w:
-                        player.update(0, -1)
-                    elif event.key == pygame.K_s:
-                        player.update(0, 1)
-                    elif event.key == pygame.K_a:
-                        player.update(-1, 0)
-                    elif event.key == pygame.K_d:
-                        player.update(1, 0)
+
+            keys = pygame.key.get_pressed()
+            delta = PLAYER_V / FPS
+            if keys[pygame.K_w]:
+                player.update(0, -delta)
+            elif keys[pygame.K_s]:
+                player.update(0, delta)
+            elif keys[pygame.K_a]:
+                player.update(-delta, 0)
+            elif keys[pygame.K_d]:
+                player.update(delta, 0)
 
             camera.update(player)
             for sprite in self.groups.all_sprites:
