@@ -23,18 +23,46 @@ class Tile(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, groups: Groups, pos_x, pos_y):
         super().__init__(groups.player_group, groups.all_sprites)
+
+        self.groups = groups
         self.image = load_texture('mario.png')
         self.rect = self.image.get_rect().move(
             TILE_WIDTH * pos_x + 5, TILE_HEIGHT * pos_y - 5)
 
+        self.fly_time = 0.0
+
+    def _move_x(self, dx):
+        self.rect.x += TILE_WIDTH * dx
+        if self._check_collisions():
+            self.rect.x -= TILE_WIDTH * dx
+
+    def _move_y(self, dy):
+        self.rect.y += TILE_HEIGHT * dy
+        if self._check_collisions():
+            self.rect.y -= TILE_HEIGHT * dy
+
+    def _check_collisions(self):
+        return pygame.sprite.spritecollideany(self, self.groups.static_group) is not None or \
+                pygame.sprite.spritecollideany(self, self.groups.dynamic_group) is not None
+
     def update(self, *args):
-        self.rect.x += TILE_WIDTH * args[0]
-        self.rect.y += TILE_HEIGHT * args[1]
-        """
-        if pygame.sprite.spritecollideany(self, tiles_group).type != 'empty':
-            self.rect.x -= tile_width * args[0]
-            self.rect.y -= tile_height * args[1]
-        """
+        keys = pygame.key.get_pressed()
+        delta_x = PLAYER_V_X / FPS
+        delta_y = PLAYER_V_Y / FPS
+
+        dx, dy = 0.0, 0.0
+        if keys[pygame.K_w]:
+            dy -= delta_y
+        if keys[pygame.K_s]:
+            dy += delta_y
+        if keys[pygame.K_a]:
+            dx -= delta_x
+        if keys[pygame.K_d]:
+            dx += delta_x
+
+        self._move_x(dx)
+        self._move_y(dy)
+        self._move_y(G_V / FPS)
 
 
 class Camera:

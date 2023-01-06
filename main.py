@@ -127,16 +127,7 @@ class Main:
                 if event.type == pygame.QUIT:
                     running = False
 
-            keys = pygame.key.get_pressed()
-            delta = PLAYER_V / FPS
-            if keys[pygame.K_w]:
-                player.update(0, -delta)
-            elif keys[pygame.K_s]:
-                player.update(0, delta)
-            elif keys[pygame.K_a]:
-                player.update(-delta, 0)
-            elif keys[pygame.K_d]:
-                player.update(delta, 0)
+            player.update()
 
             camera.update(player)
             for sprite in self.groups.all_sprites:
