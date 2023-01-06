@@ -16,12 +16,8 @@ class Main:
         self.static_tiles = {i: j for i, j in enumerate(split_on_tiles(
             load_texture('GP_Tiles.png', '#b3afbb'), TILE_WIDTH, TILE_HEIGHT))}
 
-        self.all_sprites = pygame.sprite.Group()
+        self.groups = Groups()
         self.player = None
-
-        self.static_group = pygame.sprite.Group()
-        self.dynamic_group = pygame.sprite.Group()
-        self.player_group = pygame.sprite.Group()
 
     def terminate(self):
         self.player = None  # TODO: Save
@@ -109,14 +105,16 @@ class Main:
     def make_level(self, level):
         for y, row in enumerate(level):
             for x, item in enumerate(row):
-                Tile(self.all_sprites, self.static_tiles, self.static_tiles[item], x, y)
+                if item < 0:
+                    continue
+                Tile(self.groups, self.static_tiles[item], x, y)
 
     def run(self):
         self.start_screen()
 
         self.make_level(load_map('mapT.csv'))
 
-        player = Player(self.all_sprites, self.player_group, 5, 50)
+        player = Player(self.groups, 5, 50)
         camera = Camera()
 
         running = True
@@ -137,10 +135,10 @@ class Main:
                         player.update(1, 0)
 
             camera.update(player)
-            for sprite in self.all_sprites:
+            for sprite in self.groups.all_sprites:
                 camera.apply(sprite)
 
-            self.all_sprites.draw(self.screen)
+            self.groups.all_sprites.draw(self.screen)
 
             self.clock.tick(FPS)
             pygame.display.flip()

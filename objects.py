@@ -4,16 +4,25 @@ from config import *
 from loader import *
 
 
+class Groups:
+    def __init__(self):
+        self.all_sprites = pygame.sprite.Group()
+
+        self.static_group = pygame.sprite.Group()
+        self.dynamic_group = pygame.sprite.Group()
+        self.player_group = pygame.sprite.Group()
+
+
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, all_sprites, static_group, tile_image, pos_x, pos_y):
-        super().__init__(static_group, all_sprites)
+    def __init__(self, groups: Groups, tile_image, pos_x, pos_y):
+        super().__init__(groups.static_group, groups.all_sprites)
         self.image = tile_image
         self.rect = self.image.get_rect().move(TILE_WIDTH * pos_x, TILE_HEIGHT * pos_y)
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, all_sprites, player_group, pos_x, pos_y):
-        super().__init__(player_group, all_sprites)
+    def __init__(self, groups: Groups, pos_x, pos_y):
+        super().__init__(groups.player_group, groups.all_sprites)
         self.image = load_texture('mario.png')
         self.rect = self.image.get_rect().move(
             TILE_WIDTH * pos_x + 15, TILE_HEIGHT * pos_y + 5)
