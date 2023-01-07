@@ -32,14 +32,29 @@ class Player(pygame.sprite.Sprite):
         self.fly_time = 0.0
 
     def _move_x(self, dx):
-        self.rect.x += TILE_WIDTH * dx
+        dx = int(TILE_WIDTH * dx)
+
+        self.rect.x += dx
         if self._check_collisions():
-            self.rect.x -= TILE_WIDTH * dx
+            self.rect.x -= dx
 
     def _move_y(self, dy):
-        self.rect.y += TILE_HEIGHT * dy
+        dy = int(dy * TILE_HEIGHT)
+
+        self.rect.y += dy
         if self._check_collisions():
-            self.rect.y -= TILE_HEIGHT * dy
+            self.rect.y -= dy
+
+    def _physics_check(self):
+        delta_time = 1 / FPS
+        s = G / 2 * delta_time * (2 * self.fly_time + delta_time)
+        self.fly_time += delta_time
+
+        dy = int(s * TILE_HEIGHT)
+        self.rect.y += dy
+        if self._check_collisions():
+            self.rect.y -= dy
+            self.fly_time = 0.0
 
     def _check_collisions(self):
         return pygame.sprite.spritecollideany(self, self.groups.static_group) is not None or \
@@ -62,7 +77,7 @@ class Player(pygame.sprite.Sprite):
 
         self._move_x(dx)
         self._move_y(dy)
-        self._move_y(G_V / FPS)
+        self._physics_check()
 
 
 class Camera:
