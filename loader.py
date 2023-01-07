@@ -15,6 +15,15 @@ def split_on_tiles(image, tile_w, tile_h):
             for i in range(rows) for j in range(cols)]
 
 
+def split_on_tiles_with_intervals(image, tile_w, tile_h, interval):
+    cols, rows = image.get_width() // (tile_w + interval), image.get_height() // (tile_h + interval)
+    cols = cols + 1 if (cols + 1) * tile_w + cols * interval >= image.get_width() else cols
+    rows = rows + 1 if (rows + 1) * tile_h + rows * interval >= image.get_height() else rows
+    return [image.subsurface(pygame.Rect(((tile_w + interval) * j, (tile_h + interval) * i),
+                                         (tile_w, tile_h)))
+            for i in range(rows) for j in range(cols)]
+
+
 def load_texture(name, colorkey=None):
     fullname = os.path.join('data/textures', name)
     if not os.path.isfile(fullname):
@@ -32,14 +41,19 @@ def load_texture(name, colorkey=None):
 
 
 def load_map(filename):
-    filename = os.path.join('data/maps', filename)
-    if not os.path.isfile(filename):
+    base_filename = os.path.join('data/maps', filename + '.csv')
+    cdata_filename = os.path.join('data/maps', filename + '_cdata.json')
+    if not os.path.isfile(base_filename) or not os.path.isfile(cdata_filename):
         print('File is not exist')
         exit(0)
-    with open(filename, 'r', encoding='utf-8') as csv_file:
+
+    with open(base_filename, 'r', encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         result = [[int(i) for i in row] for row in reader]
-    return result
+    with open(cdata_filename) as f:
+        cdata = json.load(f)
+
+    return result, cdata
 
 
 def update_game():

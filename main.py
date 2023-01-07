@@ -1,8 +1,5 @@
 import sys
-import pygame
 
-from loader import *
-from ui import *
 from objects import *
 
 
@@ -13,16 +10,52 @@ class Main:
         self.screen = pygame.display.set_mode(SIZE)
         self.clock = pygame.time.Clock()
 
-        self.static_tiles = {i: j for i, j in enumerate(split_on_tiles(
-            load_texture('GP_Tiles.png', '#b3afbb'), TILE_WIDTH, TILE_HEIGHT))}
+        self.asset_map = {}
+        self.prepare_asset_map()
 
-        self.groups = Groups()
+        self.groups = Groups(self)
         self.player = None
 
+        self.cdata = {}
+        self.gp_var = {'true': 1, 'false': 0}
+
     def terminate(self):
-        self.player = None  # TODO: Save
+        self.asset_map.clear()
         pygame.quit()
         sys.exit()
+
+    def save_game(self):
+        pass  # TODO: SaveGame
+
+    def prepare_asset_map(self):
+        # Tiles 0-95
+        self.asset_map = {i: j for i, j in enumerate(split_on_tiles(
+            load_texture('GP_Tiles.png', '#b3afbb'), TILE_WIDTH, TILE_HEIGHT))}
+        # Dynamic 96-107
+        self.asset_map[96] = load_texture('GP_Card.png')
+        self.asset_map[97] = load_texture('GP_Chest.png')
+        self.asset_map[98] = load_texture('GP_Money.png')
+        self.asset_map[99] = load_texture('GP_Skateboard.png')
+        self.asset_map[100] = load_texture('GP_Fountain.png')
+        self.asset_map[102] = load_texture('GP_Ladder_1.png')
+        self.asset_map[103] = load_texture('GP_Ladder_2.png')
+        # Bench 108-119
+        for i in range(8):
+            self.asset_map[i + 108] = load_texture(f'GP_Bench_{i + 1}.png')
+        # Bush 120-143a
+        for i in range(20):
+            self.asset_map[i + 120] = load_texture(f'GP_Bush_{i + 1}.png')
+        # Stone 144-148
+        for i in range(5):
+            self.asset_map[i + 144] = load_texture(f'GP_Stone_{i + 1}.png')
+        # Ramp 149-155
+        self.asset_map[149] = load_texture('GP_Ramp.png')
+        # Box 156-167
+        self.asset_map[156] = load_texture('GP_Box.png')
+        # Tree 168-179
+        for i in range(4):
+            self.asset_map[i + 168] = load_texture(f'GP_Tree_{i + 1}.png')
+        # End
 
     def start_screen(self):
         background = pygame.transform.scale(load_texture('CPO_BG.png'), (WIDTH, HEIGHT))
@@ -107,13 +140,35 @@ class Main:
             for x, item in enumerate(row):
                 if item < 0:
                     continue
-                Tile(self.groups, self.static_tiles[item], x, y)
+                if 0 <= item <= 95:
+                    Tile(self.groups, self.asset_map[item], (x, y))
+                elif item == 96:
+                    CollectableAnimatedObject(self.groups, self.asset_map[item],
+                                              (x * TILE_WIDTH, y * TILE_HEIGHT))
+                elif item == 97:
+                    pass
+                elif item == 98:
+                    pass
+                elif item == 99:
+                    pass
+                elif item == 100 or item == 101:  # Pic in 100
+                    pass
+                elif item == 102 or item == 103:
+                    pass
+                elif 108 <= item <= 119:
+                    BenchObject(self.groups, self.asset_map[item], (x, y))
+                elif 120 <= item <= 179:
+                    pass
 
     def run(self):
         self.start_screen()
 
         background = pygame.transform.scale(load_texture('S_BG3.png'), SIZE)
-        self.make_level(load_map('mapT.csv'))
+
+        m, cdata = load_map('mapT')
+        for i, j in cdata.items():
+            self.cdata[i] = j
+        self.make_level(m)
 
         player = Player(self.groups, 10, 50)
         camera = Camera()
@@ -133,7 +188,12 @@ class Main:
             for sprite in self.groups.all_sprites:
                 camera.apply(sprite)
 
+            self.groups.updatable_group.update()
+
             self.groups.all_sprites.draw(self.screen)
+
+            for i in Widget.CONTAINER.values():
+                i.draw(self.screen)
 
             self.clock.tick(FPS)
             pygame.display.flip()

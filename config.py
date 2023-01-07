@@ -21,5 +21,9 @@ COLOR_YELLOW = '#FFBF00'
 TILE_WIDTH = TILE_HEIGHT = 32
 
 PLAYER_V_X = 15
-PLAYER_V_Y = 10
-G = 9.8
+PLAYER_V_Y = 11
+G = 10
+
+
+def generate_object_name(obj, parent, index=0):
+    return f'{obj.__class__.__name__}_{id(parent)}_{index}'

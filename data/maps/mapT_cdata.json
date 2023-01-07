@@ -1,0 +1,13 @@
+{
+    "mapT_money_12_54": {
+        "count": 0
+    },
+    "mapT_chest_15_54": {
+        "open_condition": "true",
+        "items": []
+    },
+    "mapT_card_16_54": {
+        "gp_var_key": "",
+        "gp_var_value": 0
+    }
+}
