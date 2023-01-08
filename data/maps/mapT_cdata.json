@@ -1,13 +1,20 @@
 {
-    "mapT_money_12_54": {
-        "count": 0
-    },
-    "mapT_chest_15_54": {
+    "mapT_chest_11_44": {
         "open_condition": "true",
         "items": []
     },
+    "mapT_money_12_54": {
+        "count": 100
+    },
+    "mapT_chest_15_54": {
+        "open_condition": "turnOnFt1",
+        "items": []
+    },
     "mapT_card_16_54": {
-        "gp_var_key": "",
-        "gp_var_value": 0
+        "gp_var_key": "turnOnFt1",
+        "gp_var_value": 1
+    },
+    "mapT_skateboard_22_48": {
+        "number": 1
     }
 }

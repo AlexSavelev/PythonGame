@@ -18,14 +18,14 @@ class Main:
 
         self.cdata = {}
         self.gp_var = {'true': 1, 'false': 0}
+        self.money_balance = 0
+        self.chest_opened = 0
+        self.skateboards = set()
 
     def terminate(self):
         self.asset_map.clear()
         pygame.quit()
         sys.exit()
-
-    def save_game(self):
-        pass  # TODO: SaveGame
 
     def prepare_asset_map(self):
         # Tiles 0-95
@@ -36,12 +36,12 @@ class Main:
         self.asset_map[97] = load_texture('GP_Chest.png')
         self.asset_map[98] = load_texture('GP_Money.png')
         self.asset_map[99] = load_texture('GP_Skateboard.png')
-        self.asset_map[100] = load_texture('GP_Fountain.png')
+        self.asset_map[100] = load_texture('GP_Fountain.png', (255, 255, 255))
         self.asset_map[102] = load_texture('GP_Ladder_1.png')
         self.asset_map[103] = load_texture('GP_Ladder_2.png')
         # Bench 108-119
-        for i in range(8):
-            self.asset_map[i + 108] = load_texture(f'GP_Bench_{i + 1}.png')
+        for i in range(4):
+            self.asset_map[2 * i + 108] = load_texture(f'GP_Bench_{i + 1}.png')
         # Bush 120-143a
         for i in range(20):
             self.asset_map[i + 120] = load_texture(f'GP_Bush_{i + 1}.png')
@@ -135,40 +135,77 @@ class Main:
             pygame.display.flip()
             self.clock.tick(FPS)
 
-    def make_level(self, level):
+    def save_game(self):
+        print('Saved!')  # TODO: SaveGame
+
+    def collect_money(self, key):
+        count = self.cdata[key]['count']
+        self.money_balance += count
+        self.cdata.pop(key)
+
+        print(f'Money balance: {self.money_balance}')
+
+    def collect_card(self, key):
+        k, v = self.cdata[key]['gp_var_key'], self.cdata[key]['gp_var_value']
+        self.gp_var[k] = v
+        self.cdata.pop(key)
+
+    def collect_skateboard(self, key):
+        number = self.cdata[key]['number']
+        self.skateboards.add(number)
+        self.cdata.pop(key)
+
+    def interact_chest(self, key):
+        items = self.cdata[key]['items']
+        self.chest_opened += 1
+        print(f'Chest opened: {self.chest_opened}')  # TODO: Inventory system
+        self.cdata.pop(key)
+
+    def make_level(self, level, level_name):
         for y, row in enumerate(level):
             for x, item in enumerate(row):
                 if item < 0:
                     continue
                 if 0 <= item <= 95:
                     Tile(self.groups, self.asset_map[item], (x, y))
-                elif item == 96:
-                    CollectableAnimatedObject(self.groups, self.asset_map[item],
-                                              (x * TILE_WIDTH, y * TILE_HEIGHT))
-                elif item == 97:
-                    pass
-                elif item == 98:
-                    pass
-                elif item == 99:
-                    pass
+                elif 96 <= item <= 99:
+                    obj_name = ['card', 'chest', 'money', 'skateboard'][item - 96]
+                    key = f'{level_name}_{obj_name}_{x}_{y}'
+                    if key not in self.cdata:
+                        continue
+
+                    if item == 96:
+                        Card(self.groups, self.asset_map[item], (x, y), key)
+                    elif item == 97:
+                        Chest(self.groups, self.asset_map[item], (x, y), key)
+                    elif item == 98:
+                        Money(self.groups, self.asset_map[item], (x, y), key)
+                    elif item == 99:
+                        Skateboard(self.groups, self.asset_map[item], (x, y), key)
                 elif item == 100 or item == 101:  # Pic in 100
-                    pass
+                    Fountain(self.groups, self.asset_map[100], (x, y), item == 100, "turnOnFt1")
                 elif item == 102 or item == 103:
-                    pass
+                    Ladder(self.groups, self.asset_map[item], (x, y))
                 elif 108 <= item <= 119:
-                    BenchObject(self.groups, self.asset_map[item], (x, y))
-                elif 120 <= item <= 179:
-                    pass
+                    if item not in [108, 110, 112, 114]:
+                        continue
+                    Bench(self.groups, self.asset_map[item], (x, y))
+                elif 120 <= item <= 179 and item != 156:
+                    Object(self.groups, self.asset_map[item], (x, y), False)
+                elif item == 156:
+                    Object(self.groups, self.asset_map[item], (x, y), True)
 
     def run(self):
         self.start_screen()
 
         background = pygame.transform.scale(load_texture('S_BG3.png'), SIZE)
 
-        m, cdata = load_map('mapT')
+        level_name = 'mapT'
+
+        m, cdata = load_map(level_name)
         for i, j in cdata.items():
             self.cdata[i] = j
-        self.make_level(m)
+        self.make_level(m, level_name)
 
         player = Player(self.groups, 10, 50)
         camera = Camera()
