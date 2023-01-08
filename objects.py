@@ -238,13 +238,12 @@ class Skateboard(CollectableAnimatedObject):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, groups: Groups, pos_x, pos_y):
+    def __init__(self, groups: Groups, abs_pos_x, abs_pos_y):
         super().__init__(groups.player_group, groups.all_sprites)
 
         self.groups = groups
         self.image = load_texture('mario.png')
-        self.rect = self.image.get_rect().move(
-            TILE_WIDTH * pos_x + 5, TILE_HEIGHT * pos_y - 5)
+        self.rect = self.image.get_rect().move(abs_pos_x, abs_pos_y)
         self.groups.player = self
 
         self.enable_moving = True

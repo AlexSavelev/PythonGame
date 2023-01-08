@@ -4,6 +4,7 @@ import requests.exceptions
 import yadisk
 import json
 import csv
+import pickle
 from time import sleep
 
 from config import *
@@ -40,20 +41,25 @@ def load_texture(name, colorkey=None):
     return image
 
 
-def load_map(filename):
-    base_filename = os.path.join('data/maps', filename + '.csv')
-    cdata_filename = os.path.join('data/maps', filename + '_cdata.json')
-    if not os.path.isfile(base_filename) or not os.path.isfile(cdata_filename):
+def load_map(map_name):
+    base_filename = os.path.join('data/maps', map_name + '.csv')
+    if not os.path.isfile(base_filename):
         print('File is not exist')
         exit(0)
-
     with open(base_filename, 'r', encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
         result = [[int(i) for i in row] for row in reader]
+    return result
+
+
+def load_cdata(map_name):
+    cdata_filename = os.path.join('data/maps', map_name + '_cdata.json')
+    if not os.path.isfile(cdata_filename):
+        print('File is not exist')
+        exit(0)
     with open(cdata_filename) as f:
         cdata = json.load(f)
-
-    return result, cdata
+    return cdata
 
 
 def update_game():
@@ -125,3 +131,16 @@ def update_game():
         f.write(version)
 
     yield 1000000.0
+
+
+def save_data_to_bin_file(data, filename):
+    filename = os.path.join('data', filename)
+    with open(filename, 'wb') as f:
+        pickle.dump(data, f)
+
+
+def load_data_from_bin_file(filename):
+    filename = os.path.join('data', filename)
+    with open(filename, 'rb') as f:
+        data = pickle.load(f)
+    return data

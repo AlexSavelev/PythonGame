@@ -14,13 +14,18 @@ class Main:
         self.prepare_asset_map()
 
         self.groups = Groups(self)
-        self.player = None
 
+        self.current_map = ''
+        self.control_object = None, 0, 0
+
+        self.merged_cdata = []
         self.cdata = {}
-        self.gp_var = {'true': 1, 'false': 0}
+        self.gp_var = {}
         self.money_balance = 0
         self.chest_opened = 0
         self.skateboards = set()
+
+        self.loaded_sg = False
 
     def terminate(self):
         self.asset_map.clear()
@@ -120,8 +125,9 @@ class Main:
             text_coord += intro_rect.height
             self.screen.blit(string_rendered, intro_rect)
 
-        play_btn = Button(Text(None, 60, 'Старт', COLOR_BLUE, (0, 0)), COLOR_YELLOW,
-                          rect=pygame.Rect(WIDTH // 2 - 100, 350, 200, 100))
+        play_btn = Button(Text(None, 60, 'Загрузить' if self.loaded_sg else 'Новая игра',
+                               COLOR_BLUE, (0, 0)), COLOR_YELLOW,
+                          rect=pygame.Rect(WIDTH // 2 - 200, 350, 400, 100))
         play_btn.draw(self.screen)
 
         while True:
@@ -135,8 +141,43 @@ class Main:
             pygame.display.flip()
             self.clock.tick(FPS)
 
-    def save_game(self):
-        print('Saved!')  # TODO: SaveGame
+    @staticmethod
+    def save_start_game():
+        sg_data = {
+            'pos': ('mapT', 320, 1600),
+            'merged_cdata': [],
+            'cdata': {},
+            'gp_var': {'true': 1, 'false': 0},
+            'money_balance': 0,
+            'chest_opened': 0,
+            'skateboards': set()
+        }
+        save_data_to_bin_file(sg_data, SAVE_GAME_FNAME)
+
+    def save_game(self):  # TODO: Fix x, y
+        x, y = -self.control_object[1] + self.control_object[0].rect.x, \
+               self.control_object[2] - self.control_object[0].rect.y
+        sg_data = {
+            'pos': (self.current_map, x, y),
+            'merged_cdata': self.merged_cdata,
+            'cdata': self.cdata,
+            'gp_var': self.gp_var,
+            'money_balance': self.money_balance,
+            'chest_opened': self.chest_opened,
+            'skateboards': self.skateboards
+        }
+        save_data_to_bin_file(sg_data, SAVE_GAME_FNAME)
+
+    def load_game(self):
+        sg_data = load_data_from_bin_file(SAVE_GAME_FNAME)
+        self.merged_cdata = sg_data['merged_cdata']
+        self.cdata = sg_data['cdata']
+        self.gp_var = sg_data['gp_var']
+        self.money_balance = sg_data['money_balance']
+        self.chest_opened = sg_data['chest_opened']
+        self.skateboards = sg_data['skateboards']
+
+        return sg_data['pos']
 
     def collect_money(self, key):
         count = self.cdata[key]['count']
@@ -167,7 +208,9 @@ class Main:
                 if item < 0:
                     continue
                 if 0 <= item <= 95:
-                    Tile(self.groups, self.asset_map[item], (x, y))
+                    t = Tile(self.groups, self.asset_map[item], (x, y))
+                    if self.control_object[0] is None:
+                        self.control_object = t, x * TILE_WIDTH, y * TILE_HEIGHT
                 elif 96 <= item <= 99:
                     obj_name = ['card', 'chest', 'money', 'skateboard'][item - 96]
                     key = f'{level_name}_{obj_name}_{x}_{y}'
@@ -195,19 +238,30 @@ class Main:
                 elif item == 156:
                     Object(self.groups, self.asset_map[item], (x, y), True)
 
+    def load_map_and_cdata(self):
+        # Cdata
+        if self.current_map not in self.merged_cdata:
+            for i, j in load_cdata(self.current_map).items():
+                self.cdata[i] = j
+            self.merged_cdata.append(self.current_map)
+        # Map
+        m = load_map(self.current_map)
+        self.make_level(m, self.current_map)
+
     def run(self):
+        self.loaded_sg = os.path.isfile(os.path.join('data', SAVE_GAME_FNAME))
+
         self.start_screen()
 
+        if not self.loaded_sg:
+            self.save_start_game()
+
+        self.current_map, player_pos_x, player_pos_y = self.load_game()
+
         background = pygame.transform.scale(load_texture('S_BG3.png'), SIZE)
+        self.load_map_and_cdata()
 
-        level_name = 'mapT'
-
-        m, cdata = load_map(level_name)
-        for i, j in cdata.items():
-            self.cdata[i] = j
-        self.make_level(m, level_name)
-
-        player = Player(self.groups, 10, 50)
+        player = Player(self.groups, player_pos_x, player_pos_y)
         camera = Camera()
 
         running = True
