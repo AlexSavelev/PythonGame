@@ -263,6 +263,7 @@ class Main:
 
         player = Player(self.groups, player_pos_x, player_pos_y)
         camera = Camera()
+        self.time = 0
 
         running = True
         while running:
@@ -283,9 +284,17 @@ class Main:
 
             self.groups.all_sprites.draw(self.screen)
 
+            font = pygame.font.Font(None, 50)
+            minutes = str(self.time // 60000).rjust(2, '0')
+            seconds = str(self.time // 1000 % 60).rjust(2, '0')
+            text_money = font.render(f"{self.money_balance}", True, (255, 255, 0))
+            text_time = font.render(f'{minutes}:{seconds}', True, (255, 200, 200))
+            self.screen.blit(text_money, (900, 10))
+            self.screen.blit(text_time, (1100, 10))
+
             for i in Widget.CONTAINER.values():
                 i.draw(self.screen)
-
+            self.time += self.clock.get_time()
             self.clock.tick(FPS)
             pygame.display.flip()
         pygame.quit()
