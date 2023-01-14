@@ -22,10 +22,10 @@ COLOR_YELLOW = '#FFBF00'
 
 TILE_WIDTH = TILE_HEIGHT = 32
 
-PLAYER_V_X = 15
-PLAYER_V_Y = 11
+PLAYER_V_X = 10
+PLAYER_V_Y = 18
 PLAYER_CLIMB_V_Y = 10
-G = 10
+G = 30
 
 
 def generate_object_name(obj, parent, index=0):
