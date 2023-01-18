@@ -3,10 +3,6 @@ import sys
 from objects import *
 
 
-# TODO: EndScreen
-# TODO: More maps
-
-
 class Main:
     def __init__(self):
         pygame.init()
@@ -212,7 +208,7 @@ class Main:
     def interact_chest(self, key):
         items = self.cdata[key]['items']
         self.chest_opened += 1
-        print(f'Chest opened: {self.chest_opened}')  # TODO: Inventory system
+        print(f'Chest opened: {self.chest_opened}, {items}')  # TODO: Inventory system
         self.cdata.pop(key)
 
     def make_level(self, level, level_name):
@@ -278,6 +274,7 @@ class Main:
         camera = Camera()
 
         running = True
+        is_paused, cont_btn, back_mm_btn = False, None, None
         while running:
             self.screen.fill('#FFFFFF')
             self.screen.blit(background, (0, 0))
@@ -285,6 +282,26 @@ class Main:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    is_paused = True
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if cont_btn is not None and cont_btn.get_collide_rect().collidepoint(event.pos) \
+                            and pygame.mouse.get_pressed()[0] == 1:
+                        is_paused = False
+                        continue
+                    if back_mm_btn is not None and back_mm_btn.get_collide_rect().collidepoint(event.pos) \
+                            and pygame.mouse.get_pressed()[0] == 1:
+                        return self.run()
+
+            if is_paused:
+                cont_btn = Button(Text(None, 40, 'Продолжить', COLOR_BLUE, (0, 0)),
+                                  COLOR_YELLOW, rect=pygame.Rect(WIDTH // 2 - 200, 250, 400, 100))
+                back_mm_btn = Button(Text(None, 40, 'Вернуться в главное меню', COLOR_BLUE, (0, 0)),
+                                     COLOR_YELLOW, rect=pygame.Rect(WIDTH // 2 - 200, 400, 400, 100))
+                cont_btn.draw(self.screen)
+                back_mm_btn.draw(self.screen)
+                pygame.display.flip()
+                continue
 
             player.update()
 
