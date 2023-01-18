@@ -173,21 +173,10 @@ class Fountain(UpdatableObject):
             self.sound.stop()
 
         def get_vxy_magnitude():
-            return ((self.rect.x // TILE_WIDTH) ** 2 + (self.rect.y // TILE_HEIGHT) ** 2) ** 0.5
+            return ((self.rect.x - WIDTH // 2) ** 2 + (self.rect.y - HEIGHT // 2) ** 2) ** 0.5
 
-        def get_sgn_scd():
-            if -SOUND_CHANNEL_DELTAS < self.rect.x < SOUND_CHANNEL_DELTAS:
-                return 0
-            if self.rect.x > 0:
-                return SOUND_CHANNEL_DELTAS
-            if self.rect.x < -0:
-                return -SOUND_CHANNEL_DELTAS
-            return 0
-
-        new_volume = (get_vxy_magnitude() + get_sgn_scd()) ** -1, (get_vxy_magnitude() - get_sgn_scd()) ** -1
-        self.sound.set_volume(*new_volume)
-
-        # print(get_vxy_magnitude() + get_sgn_scd(), get_vxy_magnitude() - get_sgn_scd())
+        new_volume = (get_vxy_magnitude() / SOUND_CHANNEL_DELTAS) ** -1
+        self.sound.set_volume(new_volume)
 
 
 class Chest(InteractiveObject):

@@ -28,7 +28,7 @@ PLAYER_CLIMB_V_Y = 10
 G = 30
 
 
-SOUND_CHANNEL_DELTAS = 40
+SOUND_CHANNEL_DELTAS = 70
 
 
 def generate_object_name(obj, parent, index=0):
