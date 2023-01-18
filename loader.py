@@ -52,6 +52,14 @@ def load_map(map_name):
     return result
 
 
+def load_sound(sound_name):
+    base_filename = os.path.join('data/sounds', sound_name + '.ogg')
+    if not os.path.isfile(base_filename):
+        print('File is not exist')
+        exit(0)
+    return pygame.mixer.Sound(base_filename)
+
+
 def load_cdata(map_name):
     cdata_filename = os.path.join('data/maps', map_name + '_cdata.json')
     if not os.path.isfile(cdata_filename):

@@ -134,6 +134,8 @@ class Fountain(UpdatableObject):
         self.turned_on = is_turned_on
         self.key_to_update_state = key_to_update_state
 
+        self.sound = None
+
         super().__init__(groups,
                          self.on_frames[self.on_frame_index] if self.turned_on else self.off_image,
                          rel_pos)
@@ -142,6 +144,10 @@ class Fountain(UpdatableObject):
         self.time_passed = 0.0
 
     def update(self, *args):
+        if not self.turned_on and self.sound is not None:
+            self.sound.stop()
+            self.sound = None
+
         if self.key_to_update_state in self.groups.main_instance.gp_var:
             if self.groups.main_instance.gp_var[self.key_to_update_state]:
                 if not self.turned_on:
@@ -161,6 +167,27 @@ class Fountain(UpdatableObject):
             self.time_passed %= self.update_time
             self.on_frame_index = (self.on_frame_index + 1) % len(self.on_frames)
             self.image = self.on_frames[self.on_frame_index]
+
+        if self.sound is None:
+            self.sound = load_sound('fountain_sfx').play(loops=-1)
+            self.sound.stop()
+
+        def get_vxy_magnitude():
+            return ((self.rect.x // TILE_WIDTH) ** 2 + (self.rect.y // TILE_HEIGHT) ** 2) ** 0.5
+
+        def get_sgn_scd():
+            if -SOUND_CHANNEL_DELTAS < self.rect.x < SOUND_CHANNEL_DELTAS:
+                return 0
+            if self.rect.x > 0:
+                return SOUND_CHANNEL_DELTAS
+            if self.rect.x < -0:
+                return -SOUND_CHANNEL_DELTAS
+            return 0
+
+        new_volume = (get_vxy_magnitude() + get_sgn_scd()) ** -1, (get_vxy_magnitude() - get_sgn_scd()) ** -1
+        self.sound.set_volume(*new_volume)
+
+        # print(get_vxy_magnitude() + get_sgn_scd(), get_vxy_magnitude() - get_sgn_scd())
 
 
 class Chest(InteractiveObject):

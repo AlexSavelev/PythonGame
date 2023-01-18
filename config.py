@@ -28,5 +28,8 @@ PLAYER_CLIMB_V_Y = 10
 G = 30
 
 
+SOUND_CHANNEL_DELTAS = 40
+
+
 def generate_object_name(obj, parent, index=0):
     return f'{obj.__class__.__name__}_{id(parent)}_{index}'

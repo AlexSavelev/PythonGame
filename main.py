@@ -4,7 +4,6 @@ from objects import *
 
 
 # TODO: EndScreen
-# TODO: Character Animation
 # TODO: More maps
 # TODO: Sound
 
