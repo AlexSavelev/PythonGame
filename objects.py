@@ -170,12 +170,11 @@ class Fountain(UpdatableObject):
 
         if self.sound is None:
             self.sound = load_sound('fountain_sfx').play(loops=-1)
-            self.sound.stop()
 
         def get_vxy_magnitude():
             return ((self.rect.x - WIDTH // 2) ** 2 + (self.rect.y - HEIGHT // 2) ** 2) ** 0.5
 
-        new_volume = (get_vxy_magnitude() / SOUND_CHANNEL_DELTAS) ** -1
+        new_volume = min((get_vxy_magnitude() / SOUND_CHANNEL_DELTAS) ** -1, 1.0)
         self.sound.set_volume(new_volume)
 
 

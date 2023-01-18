@@ -5,7 +5,6 @@ from objects import *
 
 # TODO: EndScreen
 # TODO: More maps
-# TODO: Sound
 
 
 class Main:
@@ -33,6 +32,9 @@ class Main:
         self.loaded_sg = False
 
         self.time = 0
+
+        self.collect_money_sfx = load_sound('collect_money_sfx')
+        self.collect_card_sfx = load_sound('collect_card_sfx')
 
     def terminate(self):
         self.asset_map.clear()
@@ -189,6 +191,7 @@ class Main:
         return sg_data['pos']
 
     def collect_money(self, key):
+        self.collect_money_sfx.play()
         count = self.cdata[key]['count']
         self.money_balance += count
         self.cdata.pop(key)
@@ -196,6 +199,7 @@ class Main:
         print(f'Money balance: {self.money_balance}')
 
     def collect_card(self, key):
+        self.collect_card_sfx.play()
         k, v = self.cdata[key]['gp_var_key'], self.cdata[key]['gp_var_value']
         self.gp_var[k] = v
         self.cdata.pop(key)
