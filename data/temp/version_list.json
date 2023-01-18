@@ -50,6 +50,9 @@
     "textures/LoadingPB.png",
     "textures/mario.png",
     "textures/S_BG3.png",
+    "sounds/collect_card_sfx.ogg",
+    "sounds/collect_money_sfx.ogg",
+    "sounds/fountain_sfx.ogg",
     "maps/mapT.csv",
     "maps/mapT_cdata.json"
   ],
