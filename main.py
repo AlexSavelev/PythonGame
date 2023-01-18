@@ -3,6 +3,12 @@ import sys
 from objects import *
 
 
+# TODO: EndScreen
+# TODO: Character Animation
+# TODO: More maps
+# TODO: Sound
+
+
 class Main:
     def __init__(self):
         pygame.init()
@@ -147,6 +153,7 @@ class Main:
     def save_start_game():
         sg_data = {
             'pos': ('mapT', 270, 1700),
+            'time': 0,
             'merged_cdata': [],
             'cdata': {},
             'gp_var': {'true': 1, 'false': 0},
@@ -156,10 +163,11 @@ class Main:
         }
         save_data_to_bin_file(sg_data, SAVE_GAME_FNAME)
 
-    def save_game(self):
-        x, y = self.control_object.rect.x - WIDTH // 2, -self.control_object.rect.y + HEIGHT // 2
+    def save_game(self, pos):
+        x, y = pos[0], pos[1] - 30
         sg_data = {
             'pos': (self.current_map, x, y),
+            'time': self.time,
             'merged_cdata': self.merged_cdata,
             'cdata': self.cdata,
             'gp_var': self.gp_var,
@@ -172,6 +180,7 @@ class Main:
     def load_game(self):
         sg_data = load_data_from_bin_file(SAVE_GAME_FNAME)
         self.merged_cdata = sg_data['merged_cdata']
+        self.time = sg_data['time']
         self.cdata = sg_data['cdata']
         self.gp_var = sg_data['gp_var']
         self.money_balance = sg_data['money_balance']
@@ -275,8 +284,6 @@ class Main:
                     running = False
 
             player.update()
-
-            print(self.control_object.rect.x, self.control_object.rect.y)
 
             camera.update(player)
             for sprite in self.groups.all_sprites:

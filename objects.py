@@ -205,9 +205,12 @@ class Bench(InteractiveObject):
     def __init__(self, groups: Groups, image, rel_pos):
         super().__init__(groups, image, rel_pos,
                          False, 'Сохранить игру (F5)', pygame.K_F5)
+        self.abs_pos = \
+            rel_pos[0] * TILE_WIDTH + TILE_WIDTH // 2 - self.image.get_rect().width // 2, \
+            (rel_pos[1] + 1) * TILE_HEIGHT - self.image.get_rect().height
 
     def on_interact(self):
-        self.groups.main_instance.save_game()
+        self.groups.main_instance.save_game(self.abs_pos)
 
 
 class Money(CollectableAnimatedObject):
@@ -242,7 +245,12 @@ class Player(pygame.sprite.Sprite):
         super().__init__(groups.player_group, groups.all_sprites)
 
         self.groups = groups
-        self.image = load_texture('mario.png')
+        t = load_texture('mario.png')
+        self.image_set = {'R': pygame.transform.flip(t, True, False), 'L': t}
+
+        self.image_state = 'R'
+        self.image = self.image_set[self.image_state]
+
         self.rect = self.image.get_rect().move(abs_pos_x, abs_pos_y)
         self.groups.player = self
 
@@ -254,6 +262,13 @@ class Player(pygame.sprite.Sprite):
 
     def _move_x(self, dx):
         dx = int(TILE_WIDTH * dx)
+
+        if dx > 0 and self.image_state != 'R':
+            self.image_state = 'R'
+            self.image = self.image_set[self.image_state]
+        elif dx < 0 and self.image_state != 'L':
+            self.image_state = 'L'
+            self.image = self.image_set[self.image_state]
 
         self.rect.x += dx
         if self._check_collisions():
