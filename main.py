@@ -16,7 +16,7 @@ class Main:
         self.groups = Groups(self)
 
         self.current_map = ''
-        self.control_object = None, 0, 0
+        self.control_object = None
 
         self.merged_cdata = []
         self.cdata = {}
@@ -26,6 +26,8 @@ class Main:
         self.skateboards = set()
 
         self.loaded_sg = False
+
+        self.time = 0
 
     def terminate(self):
         self.asset_map.clear()
@@ -144,7 +146,7 @@ class Main:
     @staticmethod
     def save_start_game():
         sg_data = {
-            'pos': ('mapT', 320, 1600),
+            'pos': ('mapT', 270, 1700),
             'merged_cdata': [],
             'cdata': {},
             'gp_var': {'true': 1, 'false': 0},
@@ -154,9 +156,8 @@ class Main:
         }
         save_data_to_bin_file(sg_data, SAVE_GAME_FNAME)
 
-    def save_game(self):  # TODO: Fix x, y
-        x, y = -self.control_object[1] + self.control_object[0].rect.x, \
-               self.control_object[2] - self.control_object[0].rect.y
+    def save_game(self):
+        x, y = self.control_object.rect.x - WIDTH // 2, -self.control_object.rect.y + HEIGHT // 2
         sg_data = {
             'pos': (self.current_map, x, y),
             'merged_cdata': self.merged_cdata,
@@ -209,8 +210,8 @@ class Main:
                     continue
                 if 0 <= item <= 95:
                     t = Tile(self.groups, self.asset_map[item], (x, y))
-                    if self.control_object[0] is None:
-                        self.control_object = t, x * TILE_WIDTH, y * TILE_HEIGHT
+                    if self.control_object is None:
+                        self.control_object = t
                 elif 96 <= item <= 99:
                     obj_name = ['card', 'chest', 'money', 'skateboard'][item - 96]
                     key = f'{level_name}_{obj_name}_{x}_{y}'
@@ -263,7 +264,6 @@ class Main:
 
         player = Player(self.groups, player_pos_x, player_pos_y)
         camera = Camera()
-        self.time = 0
 
         running = True
         while running:
@@ -275,6 +275,8 @@ class Main:
                     running = False
 
             player.update()
+
+            print(self.control_object.rect.x, self.control_object.rect.y)
 
             camera.update(player)
             for sprite in self.groups.all_sprites:
