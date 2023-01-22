@@ -26,6 +26,7 @@ class Main:
         self.skateboards = set()
 
         self.loaded_sg = False
+        self.event_load_new_map = None
 
         self.time = 0
 
@@ -211,6 +212,9 @@ class Main:
         print(f'Chest opened: {self.chest_opened}, {items}')  # TODO: Inventory system
         self.cdata.pop(key)
 
+    def load_new_map(self, new_map_name):
+        self.event_load_new_map = new_map_name
+
     def make_level(self, level, level_name):
         for y, row in enumerate(level):
             for x, item in enumerate(row):
@@ -220,8 +224,9 @@ class Main:
                     t = Tile(self.groups, self.asset_map[item], (x, y))
                     if self.control_object is None:
                         self.control_object = t
-                elif 96 <= item <= 99:
-                    obj_name = ['card', 'chest', 'money', 'skateboard'][item - 96]
+                elif 96 <= item <= 101:
+                    obj_name = ['card', 'chest', 'money', 'skateboard', 'fountain', 'fountain'
+                                ][item - 96]
                     key = f'{level_name}_{obj_name}_{x}_{y}'
                     if key not in self.cdata:
                         continue
@@ -234,8 +239,8 @@ class Main:
                         Money(self.groups, self.asset_map[item], (x, y), key)
                     elif item == 99:
                         Skateboard(self.groups, self.asset_map[item], (x, y), key)
-                elif item == 100 or item == 101:  # Pic in 100
-                    Fountain(self.groups, self.asset_map[100], (x, y), item == 100, "turnOnFt1")
+                    elif item == 100 or item == 101:  # Pic in 100
+                        Fountain(self.groups, self.asset_map[100], (x, y), item == 100, key)
                 elif item == 102 or item == 103:
                     Ladder(self.groups, self.asset_map[item], (x, y))
                 elif 108 <= item <= 119:
@@ -257,6 +262,14 @@ class Main:
         m = load_map(self.current_map)
         self.make_level(m, self.current_map)
 
+    def prepare_map_to_play(self, player_pos_x=None, player_pos_y=None):
+        self.load_map_and_cdata()
+        if player_pos_x is None or player_pos_y is None:
+            player_pos_x, player_pos_y = self.cdata[f'{self.current_map}_spawn_pos']
+        player = Player(self.groups, player_pos_x, player_pos_y)
+        camera = Camera()
+        return player, camera
+
     def run(self):
         self.loaded_sg = os.path.isfile(os.path.join('data', SAVE_GAME_FNAME))
 
@@ -266,12 +279,8 @@ class Main:
             self.save_start_game()
 
         self.current_map, player_pos_x, player_pos_y = self.load_game()
-
         background = pygame.transform.scale(load_texture('S_BG3.png'), SIZE)
-        self.load_map_and_cdata()
-
-        player = Player(self.groups, player_pos_x, player_pos_y)
-        camera = Camera()
+        player, camera = self.prepare_map_to_play(player_pos_x, player_pos_y)
 
         running = True
         is_paused, cont_btn, back_mm_btn = False, None, None
@@ -289,7 +298,8 @@ class Main:
                             and pygame.mouse.get_pressed()[0] == 1:
                         is_paused = False
                         continue
-                    if back_mm_btn is not None and back_mm_btn.get_collide_rect().collidepoint(event.pos) \
+                    if back_mm_btn is not None and \
+                            back_mm_btn.get_collide_rect().collidepoint(event.pos) \
                             and pygame.mouse.get_pressed()[0] == 1:
                         return self.run()
 
@@ -302,6 +312,15 @@ class Main:
                 back_mm_btn.draw(self.screen)
                 pygame.display.flip()
                 continue
+
+            if self.event_load_new_map is not None:
+                # Load new map
+                for i in self.groups.all_sprites.sprites():
+                    i.kill()
+                self.groups.all_sprites.empty()
+                self.current_map = self.event_load_new_map
+                player, camera = self.prepare_map_to_play()
+                self.event_load_new_map = None
 
             player.update()
 

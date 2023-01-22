@@ -28,7 +28,7 @@ def split_on_tiles_with_intervals(image, tile_w, tile_h, interval):
 def load_texture(name, colorkey=None):
     fullname = os.path.join('data/textures', name)
     if not os.path.isfile(fullname):
-        print('File is not exist')
+        print(f'File {fullname} is not exist')
         exit(0)
     image = pygame.image.load(fullname)
     if colorkey is not None:
@@ -44,7 +44,7 @@ def load_texture(name, colorkey=None):
 def load_map(map_name):
     base_filename = os.path.join('data/maps', map_name + '.csv')
     if not os.path.isfile(base_filename):
-        print('File is not exist')
+        print(f'File {base_filename} is not exist')
         exit(0)
     with open(base_filename, 'r', encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file)
@@ -55,7 +55,7 @@ def load_map(map_name):
 def load_sound(sound_name):
     base_filename = os.path.join('data/sounds', sound_name + '.ogg')
     if not os.path.isfile(base_filename):
-        print('File is not exist')
+        print(f'File {base_filename} is not exist')
         exit(0)
     return pygame.mixer.Sound(base_filename)
 
@@ -63,7 +63,7 @@ def load_sound(sound_name):
 def load_cdata(map_name):
     cdata_filename = os.path.join('data/maps', map_name + '_cdata.json')
     if not os.path.isfile(cdata_filename):
-        print('File is not exist')
+        print(f'File {cdata_filename} is not exist')
         exit(0)
     with open(cdata_filename) as f:
         cdata = json.load(f)

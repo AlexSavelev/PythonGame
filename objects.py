@@ -125,14 +125,16 @@ class Ladder(InteractiveObject):
 
 
 class Fountain(UpdatableObject):
-    def __init__(self, groups: Groups, image, rel_pos, is_turned_on: bool, key_to_update_state: str):
+    def __init__(self, groups: Groups, image, rel_pos, is_turned_on: bool, key: str):
         t = split_on_tiles(image, image.get_height(), image.get_height())
         self.off_image = t[0]
         self.on_frames = t[1:]
         self.on_frame_index = 0
 
         self.turned_on = is_turned_on
-        self.key_to_update_state = key_to_update_state
+
+        self.key_to_update_state = groups.main_instance.cdata[key]['enable_condition']
+        self.new_map_name = groups.main_instance.cdata[key]['teleport_map_name']
 
         self.sound = None
 
@@ -142,6 +144,11 @@ class Fountain(UpdatableObject):
 
         self.update_time = 0.1
         self.time_passed = 0.0
+
+    def kill(self):
+        self.sound.stop()
+        self.sound = None
+        super().kill()
 
     def update(self, *args):
         if not self.turned_on and self.sound is not None:
@@ -174,8 +181,12 @@ class Fountain(UpdatableObject):
         def get_vxy_magnitude():
             return ((self.rect.x - WIDTH // 2) ** 2 + (self.rect.y - HEIGHT // 2) ** 2) ** 0.5
 
-        new_volume = min((get_vxy_magnitude() / SOUND_CHANNEL_DELTAS) ** -1, 1.0)
+        magnitude = get_vxy_magnitude()
+        new_volume = min((magnitude / SOUND_CHANNEL_DELTAS) ** -1, 1.0)
         self.sound.set_volume(new_volume)
+
+        if magnitude <= 60.0:
+            self.groups.main_instance.load_new_map(self.new_map_name)
 
 
 class Chest(InteractiveObject):

@@ -18,17 +18,20 @@ if __name__ == '__main__':
 
     data = {}
 
+    item_key, item_value = f'{map_name}_spawn_pos', [100, 100]
+    data[item_key] = old_data[item_key] if item_key in old_data else item_value
+
     for x in range(len(m[0])):
         for y in range(len(m)):
             t = m[y][x]
 
             item_key = ''
             item_value = ''
-            if not 96 <= t <= 99:
+            if not 96 <= t <= 101:
                 continue
             if t == 96:  # Card
                 item_key = f'{map_name}_card_{x}_{y}'
-                item_value = {'gp_var_key': '', 'gp_var_value': 0}
+                item_value = {'gp_var_key': '', 'gp_var_value': 1}
             elif t == 97:  # Chest
                 item_key = f'{map_name}_chest_{x}_{y}'
                 item_value = {'open_condition': 'true', 'items': []}
@@ -38,11 +41,12 @@ if __name__ == '__main__':
             elif t == 99:  # Skateboard
                 item_key = f'{map_name}_skateboard_{x}_{y}'
                 item_value = {'number': 0}
+            elif t == 100 or t == 101:  # Fountain
+                item_key = f'{map_name}_fountain_{x}_{y}'
+                item_value = {'enable_condition': ('true' if t == 100 else 'false'),
+                              'teleport_map_name': ''}
 
-            if item_key in old_data:
-                data[item_key] = old_data[item_key]
-            else:
-                data[item_key] = item_value
+            data[item_key] = old_data[item_key] if item_key in old_data else item_value
 
     with open(f'data/maps/{map_name}_cdata.json', 'w') as f:
         f.write(json.dumps(data, indent=4))

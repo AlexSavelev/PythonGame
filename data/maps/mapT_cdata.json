@@ -1,4 +1,8 @@
 {
+    "mapT_spawn_pos": [
+        270,
+        1700
+    ],
     "mapT_chest_11_44": {
         "open_condition": "true",
         "items": []
@@ -7,12 +11,16 @@
         "count": 100
     },
     "mapT_chest_15_54": {
-        "open_condition": "turnOnFt1",
+        "open_condition": "turn_on_fountain1",
         "items": []
     },
     "mapT_card_16_54": {
-        "gp_var_key": "turnOnFt1",
+        "gp_var_key": "turn_on_fountain1",
         "gp_var_value": 1
+    },
+    "mapT_fountain_21_54": {
+        "enable_condition": "turn_on_fountain1",
+        "teleport_map_name": "mapT"
     },
     "mapT_skateboard_22_48": {
         "number": 1
