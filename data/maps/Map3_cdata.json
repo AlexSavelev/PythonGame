@@ -1,0 +1,25 @@
+{
+    "Map3_spawn_pos": [
+        1200,
+        350
+    ],
+    "Map3_money_0_6": {
+        "count": 200
+    },
+    "Map3_card_2_1": {
+        "gp_var_key": "en_fountain_3",
+        "gp_var_value": 1
+    },
+    "Map3_chest_8_10": {
+        "open_condition": "box_opener",
+        "items": []
+    },
+    "Map3_fountain_18_17": {
+        "enable_condition": "en_fountain_3",
+        "teleport_map_name": "mapT"
+    },
+    "Map3_card_38_1": {
+        "gp_var_key": "box_opener",
+        "gp_var_value": 1
+    }
+}

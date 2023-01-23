@@ -20,7 +20,7 @@
     },
     "mapT_fountain_21_54": {
         "enable_condition": "turn_on_fountain1",
-        "teleport_map_name": "mapT"
+        "teleport_map_name": "Map2"
     },
     "mapT_skateboard_22_48": {
         "number": 1

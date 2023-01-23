@@ -1,0 +1,49 @@
+{
+    "Map2_spawn_pos": [
+        100,
+        535
+    ],
+    "Map2_money_7_5": {
+        "count": 100
+    },
+    "Map2_chest_13_17": {
+        "open_condition": "true",
+        "items": []
+    },
+    "Map2_fountain_19_11": {
+        "enable_condition": "en_fountain_2",
+        "teleport_map_name": "Map3"
+    },
+    "Map2_money_21_5": {
+        "count": 100
+    },
+    "Map2_card_22_11": {
+        "gp_var_key": "en_fountain_2",
+        "gp_var_value": 1
+    },
+    "Map2_money_28_10": {
+        "count": 100
+    },
+    "Map2_money_29_11": {
+        "count": 100
+    },
+    "Map2_chest_30_7": {
+        "open_condition": "true",
+        "items": []
+    },
+    "Map2_money_30_11": {
+        "count": 100
+    },
+    "Map2_money_31_12": {
+        "count": 100
+    },
+    "Map2_money_32_12": {
+        "count": 100
+    },
+    "Map2_money_33_11": {
+        "count": 100
+    },
+    "Map2_money_34_11": {
+        "count": 100
+    }
+}

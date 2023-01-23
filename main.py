@@ -24,6 +24,8 @@ class Main:
         self.money_balance = 0
         self.chest_opened = 0
         self.skateboards = set()
+        self.time = 0
+        self.hearts = 3
 
         self.loaded_sg = False
         self.event_load_new_map = None
