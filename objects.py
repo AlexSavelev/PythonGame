@@ -146,8 +146,9 @@ class Fountain(UpdatableObject):
         self.time_passed = 0.0
 
     def kill(self):
-        self.sound.stop()
-        self.sound = None
+        if self.sound is not None:
+            self.sound.stop()
+            self.sound = None
         super().kill()
 
     def update(self, *args):
@@ -313,6 +314,9 @@ class Player(pygame.sprite.Sprite):
 
         self.v_y = self.v_y + G * delta_time
         s = self.v_y * delta_time
+
+        if self.v_y >= 60:
+            self.groups.main_instance.load_last_save()
 
         dy = int(s * TILE_HEIGHT)
         self.rect.y += dy

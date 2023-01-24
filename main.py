@@ -29,6 +29,7 @@ class Main:
 
         self.loaded_sg = False
         self.event_load_new_map = None
+        self.event_load_last_save = False
 
         self.time = 0
 
@@ -217,6 +218,9 @@ class Main:
     def load_new_map(self, new_map_name):
         self.event_load_new_map = new_map_name
 
+    def load_last_save(self):
+        self.event_load_last_save = True
+
     def make_level(self, level, level_name):
         for y, row in enumerate(level):
             for x, item in enumerate(row):
@@ -314,6 +318,14 @@ class Main:
                 back_mm_btn.draw(self.screen)
                 pygame.display.flip()
                 continue
+
+            if self.event_load_last_save:
+                for i in self.groups.all_sprites.sprites():
+                    i.kill()
+                self.groups.all_sprites.empty()
+                self.current_map, player_pos_x, player_pos_y = self.load_game()
+                player, camera = self.prepare_map_to_play(player_pos_x, player_pos_y)
+                self.event_load_last_save = False
 
             if self.event_load_new_map is not None:
                 # Load new map
