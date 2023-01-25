@@ -50,11 +50,20 @@
     "textures/LoadingPB.png",
     "textures/mario.png",
     "textures/S_BG3.png",
-    "sounds/collect_card_sfx.ogg",
-    "sounds/collect_money_sfx.ogg",
-    "sounds/fountain_sfx.ogg",
     "maps/mapT.csv",
     "maps/mapT_cdata.json"
   ],
-  "0.0.2": []
+  "0.0.2": [
+    "sounds/collect_card_sfx.ogg",
+    "sounds/collect_money_sfx.ogg",
+    "sounds/fountain_sfx.ogg"
+  ],
+  "1.0.0": [
+    "maps/mapT.csv",
+    "maps/mapT_cdata.json",
+    "maps/Map2.csv",
+    "maps/Map2_cdata.json",
+    "maps/Map3.csv",
+    "maps/Map3_cdata.json"
+  ]
 }

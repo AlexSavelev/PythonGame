@@ -11,7 +11,6 @@ class Main:
         self.clock = pygame.time.Clock()
 
         self.asset_map = {}
-        self.prepare_asset_map()
 
         self.groups = Groups(self)
 
@@ -33,8 +32,8 @@ class Main:
 
         self.time = 0
 
-        self.collect_money_sfx = load_sound('collect_money_sfx')
-        self.collect_card_sfx = load_sound('collect_card_sfx')
+        self.collect_money_sfx = None
+        self.collect_card_sfx = None
 
     def terminate(self):
         self.asset_map.clear()
@@ -69,7 +68,9 @@ class Main:
         # Tree 168-179
         for i in range(4):
             self.asset_map[i + 168] = load_texture(f'GP_Tree_{i + 1}.png')
-        # End
+        # End textures
+        self.collect_money_sfx = load_sound('collect_money_sfx')
+        self.collect_card_sfx = load_sound('collect_card_sfx')
 
     def start_screen(self):
         background = pygame.transform.scale(load_texture('CPO_BG.png'), (WIDTH, HEIGHT))
@@ -284,6 +285,7 @@ class Main:
         if not self.loaded_sg:
             self.save_start_game()
 
+        self.prepare_asset_map()
         self.current_map, player_pos_x, player_pos_y = self.load_game()
         background = pygame.transform.scale(load_texture('S_BG3.png'), SIZE)
         player, camera = self.prepare_map_to_play(player_pos_x, player_pos_y)
