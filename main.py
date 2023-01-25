@@ -309,6 +309,9 @@ class Main:
                     if back_mm_btn is not None and \
                             back_mm_btn.get_collide_rect().collidepoint(event.pos) \
                             and pygame.mouse.get_pressed()[0] == 1:
+                        for i in self.groups.all_sprites.sprites():
+                            i.kill()
+                        self.groups.all_sprites.empty()
                         return self.run()
 
             if is_paused:
