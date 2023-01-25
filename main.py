@@ -213,7 +213,7 @@ class Main:
     def interact_chest(self, key):
         items = self.cdata[key]['items']
         self.chest_opened += 1
-        print(f'Chest opened: {self.chest_opened}, {items}')  # TODO: Inventory system
+        print(f'Chest opened: {self.chest_opened}, {items}')
         self.cdata.pop(key)
 
     def load_new_map(self, new_map_name):
